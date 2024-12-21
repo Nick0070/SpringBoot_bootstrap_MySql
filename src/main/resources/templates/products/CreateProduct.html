@@ -1,120 +1,171 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Создание продукта</title>
+    <title>Редактирование продукта</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+            color: #495057;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: #f9f9f9;
         }
 
         .form-container {
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            width: 400px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 700px;
+            transition: box-shadow 0.3s ease-in-out;
+        }
+
+        .form-container:hover {
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
         }
 
         .form-container h2 {
-            margin-bottom: 20px;
             text-align: center;
+            font-weight: 600;
+            color: #007bff;
+            margin-bottom: 35px;
+            font-size: 2rem;
+            line-height: 1.4;
         }
 
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        .form-group input,
-        .form-group textarea,
-        .form-group select {
-            width: 100%;
-            padding: 8px;
-            font-size: 1rem;
+        .form-control, .form-select {
+            border-radius: 8px;
+            height: 50px;
             border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-
-        .form-group textarea {
-            resize: vertical;
-            height: 100px;
-        }
-
-        .form-actions {
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .form-actions button {
-            padding: 10px 20px;
             font-size: 1rem;
-            cursor: pointer;
-            border: none;
-            border-radius: 4px;
+            padding-left: 15px;
+            width: 100%;
         }
 
-        .form-actions .submit {
-            background-color: #0d6efd;
+        textarea.form-control {
+            height: 150px;
+            resize: none;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            transition: background-color 0.2s ease;
+            font-size: 1rem;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-outline-primary {
+            color: #007bff;
+            border-color: #007bff;
+            transition: background-color 0.2s ease;
+            font-size: 1rem;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 1px solid;
+        }
+
+        .btn-outline-primary:hover {
+            background-color: #007bff;
             color: white;
         }
 
-        .form-actions .cancel {
-            background-color: #f1f1f1;
-            color: black;
+        .mb-3 {
+            margin-bottom: 30px;
+        }
+
+        .d-flex {
+            display: flex;
+        }
+
+        .justify-content-between {
+            justify-content: flex-start;
+        }
+
+        .text-danger {
+            font-size: 0.875rem;
+            margin-top: 5px;
+            color: #dc3545;
+        }
+
+        .form-label {
+            font-weight: 500;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
         }
     </style>
 </head>
 <body>
 <div class="form-container">
-    <h2>Новый продукт</h2>
-    <form action="/products/create" method="POST" enctype="multipart/form-data">
-        <div class="form-group">
-            <label for="name">Название</label>
-            <input type="text" id="name" name="name" placeholder="Enter product name" required>
-        </div>
-        <div class="form-group">
-            <label for="brand">Бренд</label>
-            <input type="text" id="brand" name="brand" placeholder="Enter brand name" required>
-        </div>
-        <div class="form-group">
-            <label for="category">Категория</label>
-            <select id="category" name="category" required>
-                <option value="other">другие</option>
-                <option value="electronics">Ski</option>
-                <option value="clothing">Beach</option>
-                <option value="books">Cultural</option>
-                <option value="books">Adventure</option>
-                <option value="books">Cruise</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="price">Цена</label>
-            <input type="number" id="price" name="price" step="0.01" min="0" value="0.0" required>
-        </div>
-        <div class="form-group">
-            <label for="description">Описание</label>
-            <textarea id="description" name="description" placeholder="Enter product description" required></textarea>
+    <h2>Создание продукта</h2>
+    <form method="post" enctype="multipart/form-data" th:object="${productDto}">
+        <!-- Поле имени -->
+        <div class="mb-3">
+            <label for="name" class="form-label">Имя продукта</label>
+            <input type="text" id="name" class="form-control" th:field="${productDto.name}" placeholder="Введите название продукта">
+            <p th:if="${#fields.hasErrors('name')}" th:errors="${productDto.name}" class="text-danger"></p>
         </div>
 
-        <div class="form-actions">
-            <button type="submit" class="submit">Сохранить</button>
-            <button type="button" class="cancel" onclick="window.location.href='/products';">Назад</button>
+        <!-- Поле бренда -->
+        <div class="mb-3">
+            <label for="brand" class="form-label">Бренд</label>
+            <input type="text" id="brand" class="form-control" th:field="${productDto.brand}" placeholder="Введите бренд продукта">
+            <p th:if="${#fields.hasErrors('brand')}" th:errors="${productDto.brand}" class="text-danger"></p>
+        </div>
+
+        <!-- Поле категории -->
+        <div class="mb-3">
+            <label for="category" class="form-label">Категории</label>
+            <select id="category" class="form-select" th:field="${productDto.category}">
+                <option value="other">Другие</option>
+                <option value="Beach">Beach</option>
+                <option value="Ski">Ski</option>
+                <option value="Cultural">Cultural</option>
+                <option value="Adventure">Adventure</option>
+            </select>
+            <p th:if="${#fields.hasErrors('category')}" th:errors="${productDto.category}" class="text-danger"></p>
+        </div>
+
+        <!-- Поле цены -->
+        <div class="mb-3">
+            <label for="price" class="form-label">Цена</label>
+            <input type="number" id="price" class="form-control" th:field="${productDto.price}" step="0.01" min="0" placeholder="Введите цену продукта">
+            <p th:if="${#fields.hasErrors('price')}" th:errors="${productDto.price}" class="text-danger"></p>
+        </div>
+
+        <!-- Поле описания -->
+        <div class="mb-3">
+            <label for="description" class="form-label">Описание</label>
+            <textarea id="description" class="form-control" th:field="${productDto.description}" placeholder="Введите описание продукта"></textarea>
+            <p th:if="${#fields.hasErrors('description')}" th:errors="${productDto.description}" class="text-danger"></p>
+        </div>
+
+        <!-- Кнопки -->
+        <div class="d-flex justify-content-between">
+            <button type="submit" class="btn-primary">Сохранить</button>
+            <a href="/products" class="btn-outline-primary">Отмена</a>
         </div>
     </form>
 </div>
+
 </body>
 </html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Редактирование продукта</title>
+</head>
+<body>
+<h1>Редактировать продукт</h1>
+<form method="post" action="/products/edit/${product.id}">
+  <label for="name">Имя:</label>
+  <input type="text" id="name" name="name" value="${productDto.name}" required>
+
+  <label for="brand">Бренд:</label>
+  <input type="text" id="brand" name="brand" value="${productDto.brand}" required>
+
+  <label for="category">Категория:</label>
+  <input type="text" id="category" name="category" value="${productDto.category}" required>
+
+  <label for="price">Цена:</label>
+  <input type="number" id="price" name="price" value="${productDto.price}" required>
+
+  <label for="description">Описание:</label>
+  <textarea id="description" name="description" required>${productDto.description}</textarea>
+
+  <button type="submit">Сохранить</button>
+</form>
+</body>
+</html>

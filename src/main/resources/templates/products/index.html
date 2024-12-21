@@ -8,7 +8,7 @@
 </head>
 <body>
 <div class="container">
-    <h1 class="text-center my-4"> Туры</h1>
+    <h1 class="text-center my-4">Туры</h1>
 
     <!-- Кнопка "Создать тур" -->
     <a class="btn btn-primary" href="/products/create">Создать тур</a>
@@ -16,7 +16,7 @@
     <!-- Кнопка "Выйти" -->
     <a class="btn btn-secondary ml-3" href="/login">Выйти</a>
 
-    <table class="table mt-4">
+    <table class="table table-striped mt-4">
         <thead>
         <tr>
             <th>ID</th>
@@ -24,21 +24,18 @@
             <th>Бренд</th>
             <th>Категория</th>
             <th>Цена</th>
-            <th>Картинка</th>
             <th>Дата создания</th>
             <th>Действие</th>
         </tr>
         </thead>
         <tbody>
-        <tr th:each="product: ${products}">
+        <tr th:each="product : ${products}">
             <td th:text="${product.id}"></td>
             <td th:text="${product.name}"></td>
             <td th:text="${product.brand}"></td>
             <td th:text="${product.category}"></td>
             <td th:text="${product.price} + '$'"></td>
-            <td>
-            </td>
-            <td th:text="${product.createdAt.toString().substring(0,10)}"></td>
+            <td th:text="${product.createdAt.toString().substring(0, 10)}"></td>
             <td style="white-space:nowrap">
                 <a class="btn btn-primary btn-sm"
                    th:href="@{/products/edit{id=${product.id}}}">Изменить</a>
