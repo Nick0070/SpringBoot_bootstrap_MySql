@@ -9,19 +9,14 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
 import com.Kyrs.Tyrist.services.ProductsRepository;
 import org.springframework.validation.BindingResult;
-
-
-
-
-
 import java.util.Date;
 import java.util.Optional;
+
 @Controller
 @RequestMapping("/products")
 public class ProductController {
 
     private final ProductsRepository repo;
-
     public ProductController(ProductsRepository repo) {
         this.repo = repo;
     }
@@ -32,6 +27,7 @@ public class ProductController {
         return "products/index";
     }
 
+    ////////////////////////////////////////////////
     @GetMapping("/create")
     public String showCreatePage(Model model) {
         model.addAttribute("productDto", new ProductDto());
@@ -53,32 +49,26 @@ public class ProductController {
         repo.save(product);
         return "redirect:/products";
     }
+    ////////////////////////////////////////////////
 
-
-
-
+    ////////////////////////////////////////////////
     @GetMapping("/edit/{id}")
     public String showEditPage(@PathVariable int id, Model model) {
         Optional<Product> optionalProduct = repo.findById(id);
         if (optionalProduct.isPresent()) {
             Product product = optionalProduct.get();
             ProductDto productDto = new ProductDto();
-
-            // Заполнение DTO
             productDto.setName(product.getName());
             productDto.setBrand(product.getBrand());
             productDto.setCategory(product.getCategory());
             productDto.setPrice(product.getPrice());
             productDto.setDescription(product.getDescription());
-
-            // Выводим информацию о продукте в терминал
             System.out.println("Product ID: " + product.getId());
             System.out.println("Product Name: " + product.getName());
             System.out.println("Product Brand: " + product.getBrand());
             System.out.println("Product Category: " + product.getCategory());
             System.out.println("Product Price: " + product.getPrice());
             System.out.println("Product Description: " + product.getDescription());
-
             model.addAttribute("product", product);
             model.addAttribute("productDto", productDto);
 
@@ -87,60 +77,44 @@ public class ProductController {
         return "redirect:/products?error=not-found";
     }
 
+    @PostMapping("/edit/{id}")
+    public String updateProduct(@PathVariable int id, @Valid @ModelAttribute ProductDto productDto, BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            return "products/EditProduct";
+        }
+        Optional<Product> optionalProduct = repo.findById(id);
+        if (optionalProduct.isPresent()) {
+            Product product = optionalProduct.get();
+            product.setName(productDto.getName());
+            product.setBrand(productDto.getBrand());
+            product.setCategory(productDto.getCategory());
+            product.setPrice(productDto.getPrice());
+            product.setDescription(productDto.getDescription());
+            product.setCreatedAt(new Date());  // Можно оставить старое значение, если не хотите обновлять дату
+            repo.save(product);
+            return "redirect:/products";
+        }
+        return "redirect:/products?error=not-found";
+    }
+    ////////////////////////////////////////////////
 
+    ////////////////////////////////////////////////
+    @GetMapping("/delete")
+    public String deleteProduct(@RequestParam int id) {
+        try {
+            Optional<Product> optionalProduct = repo.findById(id);
+            if (optionalProduct.isPresent()) {
+                Product product = optionalProduct.get();
+                repo.delete(product);  // Удаляем продукт из базы данных
+                return "redirect:/products";  // Перенаправляем на список продуктов после удаления
+            } else {
+                System.out.println("Product not found with id: " + id);  // Продукт не найден
+            }
+        } catch (Exception ex) {
+            System.out.println("Error occurred while deleting product: " + ex.getMessage());  // Логирование ошибки
+        }
 
-
-
-//
-//
-//    @PostMapping("/edit/{id}")
-//    public String updateProduct(@PathVariable int id, @Valid @ModelAttribute ProductDto productDto, BindingResult result, Model model) {
-//        if (result.hasErrors()) {
-//            return "products/EditProduct";
-//        }
-//
-//        Optional<Product> optionalProduct = repo.findById(id);
-//        if (optionalProduct.isPresent()) {
-//            Product product = optionalProduct.get();
-//
-//            product.setName(productDto.getName());
-//            product.setBrand(productDto.getBrand());
-//            product.setCategory(productDto.getCategory());
-//            product.setPrice(productDto.getPrice());
-//            product.setDescription(productDto.getDescription());
-//            product.setCreatedAt(new Date());  // Можно оставить старое значение, если не хотите обновлять дату
-//
-//            repo.save(product);
-//
-//            return "redirect:/products";
-//        }
-//
-//        return "redirect:/products?error=not-found";
-//    }
-//
-//
-//
-//
-//
-//
-//
-//
-//    @GetMapping("/delete")
-//    public String deleteProduct(
-//            @RequestParam int id
-//    ){
-//        try {
-//            Product product = repo.findById(id).get();
-//
-//        }
-//        catch (Exception ex ){
-//            System.out.println("Ex");
-//        }
-//
-//
-//
-//
-//        return "rediect:/products";
-//    }
-
+        return "redirect:/products";  // Если продукт не найден или произошла ошибка
+    }
+    ////////////////////////////////////////////////
 }

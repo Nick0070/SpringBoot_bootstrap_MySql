@@ -1,29 +1,155 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Редактирование продукта</title>
+  <style>
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Arial', sans-serif;
+        color: #495057;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+
+    .form-container {
+        background-color: #ffffff;
+        border-radius: 12px;
+        padding: 40px;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 700px;
+    }
+
+    .form-container h2 {
+        text-align: center;
+        font-weight: bold;
+        color: #007bff;
+        margin-bottom: 30px;
+    }
+
+    .form-control, .form-select {
+        border-radius: 8px;
+        height: 45px;
+        border: 1px solid #ced4da;
+        font-size: 1rem;
+        padding: 10px 15px;
+        width: 100%;
+    }
+
+    textarea.form-control {
+        height: 100px;
+        resize: none;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 1rem;
+        border-radius: 8px;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    .btn-outline-primary {
+        background-color: transparent;
+        color: #007bff;
+        border: 2px solid #007bff;
+        padding: 10px 20px;
+        font-size: 1rem;
+        border-radius: 8px;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .btn-outline-primary:hover {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .mb-3 {
+        margin-bottom: 20px;
+    }
+
+    .mb-4 {
+        margin-bottom: 30px;
+    }
+
+    .form-label {
+        font-weight: bold;
+        margin-bottom: 8px;
+    }
+
+    .text-danger {
+        font-size: 0.875rem;
+        color: #dc3545;
+    }
+  </style>
 </head>
 <body>
-<h1>Редактировать продукт</h1>
-<form method="post" action="/products/edit/${product.id}">
-  <label for="name">Имя:</label>
-  <input type="text" id="name" name="name" value="${productDto.name}" required>
+<div class="form-container">
+  <h2>Редактирование продукта</h2>
+  <form method="post" enctype="multipart/form-data" th:object="${productDto}">
+    <!-- Имя продукта -->
+    <div class="mb-3">
+      <label for="name" class="form-label">Имя продукта</label>
+      <input type="text" id="name" class="form-control" th:field="*{name}" placeholder="Введите имя продукта" required>
+      <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger"></p>
+    </div>
 
-  <label for="brand">Бренд:</label>
-  <input type="text" id="brand" name="brand" value="${productDto.brand}" required>
+    <!-- Бренд -->
+    <div class="mb-3">
+      <label for="brand" class="form-label">Бренд</label>
+      <input type="text" id="brand" class="form-control" th:field="*{brand}" placeholder="Введите бренд" required>
+      <p th:if="${#fields.hasErrors('brand')}" th:errors="*{brand}" class="text-danger"></p>
+    </div>
 
-  <label for="category">Категория:</label>
-  <input type="text" id="category" name="category" value="${productDto.category}" required>
+    <!-- Категория -->
+    <div class="mb-3">
+      <label for="category" class="form-label">Категория</label>
+      <select id="category" class="form-select" th:field="*{category}">
+        <option value="" disabled>Выберите категорию</option>
+        <option value="other" th:selected="*{category == 'other'}">Другие</option>
+        <option value="Beach" th:selected="*{category == 'Beach'}">Пляж</option>
+        <option value="Ski" th:selected="*{category == 'Ski'}">Лыжи</option>
+        <option value="Cultural" th:selected="*{category == 'Cultural'}">Культура</option>
+        <option value="Adventure" th:selected="*{category == 'Adventure'}">Приключения</option>
+      </select>
+      <p th:if="${#fields.hasErrors('category')}" th:errors="*{category}" class="text-danger"></p>
+    </div>
 
-  <label for="price">Цена:</label>
-  <input type="number" id="price" name="price" value="${productDto.price}" required>
+    <!-- Цена -->
+    <div class="mb-3">
+      <label for="price" class="form-label">Цена</label>
+      <input type="number" id="price" class="form-control" th:field="*{price}" step="0.01" min="0" placeholder="Введите цену" required>
+      <p th:if="${#fields.hasErrors('price')}" th:errors="*{price}" class="text-danger"></p>
+    </div>
 
-  <label for="description">Описание:</label>
-  <textarea id="description" name="description" required>${productDto.description}</textarea>
+    <!-- Описание -->
+    <div class="mb-3">
+      <label for="description" class="form-label">Описание</label>
+      <textarea id="description" class="form-control" th:field="*{description}" placeholder="Введите описание"></textarea>
+      <p th:if="${#fields.hasErrors('description')}" th:errors="*{description}" class="text-danger"></p>
+    </div>
 
-  <button type="submit">Сохранить</button>
-</form>
+    <!-- Кнопки -->
+    <div class="mb-4">
+      <button type="submit" class="btn-primary">Сохранить изменения</button>
+      <a href="/products" class="btn-outline-primary">Отмена</a>
+    </div>
+  </form>
+</div>
 </body>
 </html>
